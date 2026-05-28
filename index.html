@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SwiftBite — Food Delivery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0c0a;
+      --card: #161410;
+      --accent: #f4a024;
+      --accent2: #e05c2a;
+      --text: #f0ece4;
+      --muted: #7a7469;
+      --border: #2a2620;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(13,12,10,0.92);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .cart-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 0.55rem 1.3rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .cart-btn:hover { background: #fbb03b; transform: scale(1.04); }
+
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 3rem;
+      padding: 5rem 3rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.3rem 0.85rem;
+      border-radius: 2rem;
+      margin-bottom: 1.4rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      padding: 0.85rem 2rem;
+      border-radius: 2rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,160,36,0.3); }
+    .btn-ghost {
+      color: var(--text);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 0.85rem 1.8rem;
+      border-radius: 2rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      text-decoration: none;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .hero-visual {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      animation: fadeIn 1s 0.2s ease both;
+    }
+    .hero-plate {
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #3a2a10, #1a1208);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9rem;
+      box-shadow: 0 0 80px rgba(244,160,36,0.15), 0 0 0 1px var(--border);
+      animation: float 4s ease-in-out infinite;
+    }
+    .badge {
+      position: absolute;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 0.6rem 1rem;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .badge-1 { top: 20px; right: 0; }
+    .badge-2 { bottom: 30px; left: 0; }
+    .badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
+
+    /* STATS */
+    .stats {
+      display: flex;
+      gap: 3rem;
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .stat-item { text-align: center; }
+    .stat-item .num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-item .label { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* MENU */
+    .section { max-width: 1200px; margin: 0 auto; padding: 4rem 3rem; }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 2.5rem;
+    }
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+    }
+    .see-all { color: var(--accent); font-size: 0.88rem; text-decoration: none; cursor: pointer; }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 0.45rem 1.1rem;
+      border-radius: 2rem;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab.active, .tab:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.4rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1.2rem;
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+      animation: fadeUp 0.5s ease both;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+    .card-img {
+      height: 160px;
+      background: linear-gradient(135deg, #1e1a10, #2a2010);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      position: relative;
+    }
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--accent);
+      color: #000;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2rem;
+    }
+    .card-body { padding: 1.1rem; }
+    .card-body h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+    .price { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+    .add-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .add-btn:hover { transform: scale(1.15); background: #fbb03b; }
+    .stars { color: var(--accent); font-size: 0.8rem; }
+    .desc { color: var(--muted); font-size: 0.82rem; line-height: 1.5; margin-top: 0.3rem; }
+
+    /* HOW IT WORKS */
+    .how-section {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 4rem 3rem;
+    }
+    .how-inner { max-width: 1200px; margin: 0 auto; }
+    .how-inner h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .step { text-align: center; padding: 1.5rem; }
+    .step-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2a1e08, #1a1208);
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 1.2rem;
+    }
+    .step h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .step p { color: var(--muted); font-size: 0.87rem; line-height: 1.6; }
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.6rem;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--accent);
+      color: #000;
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-14px); }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.2rem; }
+      .hero { grid-template-columns: 1fr; padding: 3rem 1.2rem 2rem; }
+      .hero-visual { display: none; }
+      .stats { gap: 1.5rem; padding: 2rem 1.2rem; flex-wrap: wrap; }
+      .section { padding: 3rem 1.2rem; }
+      .steps { grid-template-columns: 1fr; }
+      .how-section { padding: 3rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">SwiftBite</div>
+  <div class="nav-links">
+    <a href="#">Menu</a>
+    <a href="#">Offers</a>
+    <a href="#">Track Order</a>
+    <button class="cart-btn" onclick="showCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-tag">⚡ 20–30 min delivery</div>
+    <h1>Delicious Food,<br/><span>Delivered Fast</span><br/>To Your Door</h1>
+    <p>From local favorites to gourmet meals — hot, fresh, and right on time. Over 200+ restaurants in your city.</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn-primary">Browse Menu</a>
+      <a href="#how" class="btn-ghost">How it works</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-plate">🍜</div>
+    <div class="badge badge-1"><div class="dot"></div> 1,240 orders today</div>
+    <div class="badge badge-2">⭐ 4.9 rated service</div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item"><div class="num">200+</div><div class="label">Restaurants</div></div>
+  <div class="stat-item"><div class="num">25 min</div><div class="label">Avg. Delivery</div></div>
+  <div class="stat-item"><div class="num">50K+</div><div class="label">Happy Customers</div></div>
+  <div class="stat-item"><div class="num">4.9★</div><div class="label">App Rating</div></div>
+</div>
+
+<!-- MENU -->
+<section class="section" id="menu">
+  <div class="section-header">
+    <h2>Popular Right Now</h2>
+    <a class="see-all">See all →</a>
+  </div>
+
+  <div class="filter-tabs">
+    <button class="tab active" onclick="filterMenu(this, 'all')">All</button>
+    <button class="tab" onclick="filterMenu(this, 'pizza')">🍕 Pizza</button>
+    <button class="tab" onclick="filterMenu(this, 'burger')">🍔 Burgers</button>
+    <button class="tab" onclick="filterMenu(this, 'asian')">🍜 Asian</button>
+    <button class="tab" onclick="filterMenu(this, 'dessert')">🍰 Desserts</button>
+  </div>
+
+  <div class="menu-grid" id="menu-grid"></div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="how-section" id="how">
+  <div class="how-inner">
+    <h2>Order in 3 Simple Steps</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">STEP 01</div>
+        <div class="step-icon">📍</div>
+        <h3>Set Your Location</h3>
+        <p>Enter your address and we'll show you the best restaurants delivering to your area right now.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 02</div>
+        <div class="step-icon">🛒</div>
+        <h3>Pick Your Meal</h3>
+        <p>Browse menus, customize your order, and add your favorites to the cart in just a few taps.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 03</div>
+        <div class="step-icon">🚴</div>
+        <h3>Fast Delivery</h3>
+        <p>We dispatch your order instantly. Track your rider live and enjoy your meal while it's hot.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>© 2025 SwiftBite. All rights reserved. Made with ❤️ for food lovers.</footer>
+
+<div class="toast" id="toast">✅ Added to cart!</div>
+
+<script>
+  const items = [
+    { id:1, name:"Margherita Pizza", emoji:"🍕", price:12.99, rating:4.8, cat:"pizza", badge:"Bestseller", desc:"Classic tomato & fresh mozzarella on crispy crust." },
+    { id:2, name:"BBQ Smash Burger", emoji:"🍔", price:10.49, rating:4.7, cat:"burger", badge:"Spicy 🌶", desc:"Double smash patty with smoky BBQ sauce & pickles." },
+    { id:3, name:"Spicy Ramen Bowl", emoji:"🍜", price:13.99, rating:4.9, cat:"asian", badge:"New", desc:"Rich tonkotsu broth with chashu pork & soft egg." },
+    { id:4, name:"Choco Lava Cake", emoji:"🍰", price:6.49, rating:4.9, cat:"dessert", badge:"Fan Fav", desc:"Warm molten chocolate center with vanilla ice cream." },
+    { id:5, name:"Pepperoni Feast", emoji:"🍕", price:14.49, rating:4.7, cat:"pizza", badge:null, desc:"Loaded with premium pepperoni on tangy tomato base." },
+    { id:6, name:"Fried Chicken Burger", emoji:"🍔", price:9.99, rating:4.6, cat:"burger", badge:"Crispy", desc:"Crunchy golden chicken fillet with creamy slaw." },
+    { id:7, name:"Pad Thai Noodles", emoji:"🍜", price:11.99, rating:4.8, cat:"asian", badge:null, desc:"Stir-fried rice noodles with tofu, peanuts & lime." },
+    { id:8, name:"Mango Sorbet", emoji:"🍧", price:5.49, rating:4.7, cat:"dessert", badge:"Vegan", desc:"Refreshing real mango sorbet, dairy-free & light." },
+  ];
+
+  let cartCount = 0;
+  let activeFilter = 'all';
+
+  function renderMenu(filter) {
+    const grid = document.getElementById('menu-grid');
+    const filtered = filter === 'all' ? items : items.filter(i => i.cat === filter);
+    grid.innerHTML = filtered.map((item, idx) => `
+      <div class="card" style="animation-delay:${idx*0.07}s">
+        <div class="card-img">
+          ${item.badge ? `<div class="card-badge">${item.badge}</div>` : ''}
+          ${item.emoji}
+        </div>
+        <div class="card-body">
+          <div class="stars">${'★'.repeat(Math.floor(item.rating))} ${item.rating}</div>
+          <h3>${item.name}</h3>
+          <div class="desc">${item.desc}</div>
+          <div class="card-meta">
+            <span class="price">$${item.price.toFixed(2)}</span>
+            <button class="add-btn" onclick="addToCart()">+</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterMenu(btn, cat) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderMenu(cat);
+  }
+
+  function addToCart() {
+    cartCount++;
+    document.getElementById('cart-count').textContent = cartCount;
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  function showCart() {
+    alert(`🛒 You have ${cartCount} item(s) in your cart.\n\nCheckout coming soon!`);
+  }
+
+  renderMenu('all');
+</script>
+</body>
+</html>
